@@ -12,7 +12,7 @@ Each example directory contains:
 ## Example Matrix
 
 | Example | Model | Mode | Draft required? | Default GPU layout |
-|---------|-------|------|:-:|----|:-:|
+|---------|-------|------|:---------------:|--------------------|
 | [qwen3-4b-external-with-draft](qwen3-4b-external-with-draft/) | Qwen3-4B | External + EAGLE3 | Yes | train: 0,1 / sglang: 2 |
 | [qwen3-4b-external-no-draft](qwen3-4b-external-no-draft/) | Qwen3-4B | External, from scratch | No | train: 0,1 / sglang: 2 |
 | [qwen3-8b-external-with-draft](qwen3-8b-external-with-draft/) | Qwen3-8B | External + EAGLE3 | Yes | train: 0,1 / sglang: 2,3,4,5 |
