@@ -12,7 +12,7 @@ Each example directory contains:
 ## Example Matrix
 
 | Example | Model | Mode | Draft required? | Default GPU layout |
-|---------|-------|------|:-:|----|:-:|
+|---------|-------|------|:---------------:|--------------------|
 | [qwen3-4b-external-with-draft](qwen3-4b-external-with-draft/) | Qwen3-4B | External + EAGLE3 | Yes | train: 0,1 / sglang: 2 |
 | [qwen3-4b-external-no-draft](qwen3-4b-external-no-draft/) | Qwen3-4B | External, from scratch | No | train: 0,1 / sglang: 2 |
 | [qwen3-8b-external-with-draft](qwen3-8b-external-with-draft/) | Qwen3-8B | External + EAGLE3 | Yes | train: 0,1 / sglang: 2,3,4,5 |
@@ -68,17 +68,18 @@ The `*-2node` examples split training and inference across two machines. Both no
 
 A dataset must be provided to the trainer so it can build the vocab mapping before the draft model is created. The SGLang server on Node 2 runs independently — if the trainer on Node 1 crashes, the SGLang server continues serving requests unaffected.
 
-```bash
-# Node 1 (training): start first — waits for draft model to be ready
-NODE2_IP=<inference-node-ip> bash examples/qwen3-8b-coder-next-external-with-draft-2node/run_node1_train.sh
-
-# Node 2 (inference): start after Node 1 prints "Node 1 is ready"
-NODE1_IP=<training-node-ip> bash examples/qwen3-8b-coder-next-external-with-draft-2node/run_node2_sglang.sh
-
-# Send requests (from either node)
-SGLANG_URL=http://<inference-node-ip>:30000 \
-  bash examples/qwen3-8b-coder-next-external-with-draft-2node/send_requests.sh
-```
+1. **Machine 1:** Run `run_node1_train.sh`
+   ```bash
+   NODE2_IP=<inference-node-ip> bash examples/qwen3-8b-coder-next-external-with-draft-2node/run_node1_train.sh
+   ```
+2. **Machine 2:** Run `run_node2_sglang.sh` (after Node 1 prints "Node 1 is ready")
+   ```bash
+   NODE1_IP=<training-node-ip> bash examples/qwen3-8b-coder-next-external-with-draft-2node/run_node2_sglang.sh
+   ```
+3. **Machine 2:** Run `send_requests.sh`
+   ```bash
+   SGLANG_URL=http://<inference-node-ip>:30000 bash examples/qwen3-8b-coder-next-external-with-draft-2node/send_requests.sh
+   ```
 
 ### Config overrides
 
