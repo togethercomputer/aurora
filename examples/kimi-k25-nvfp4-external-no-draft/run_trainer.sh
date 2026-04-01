@@ -47,7 +47,7 @@ SGLANG_PORT="${SGLANG_PORT:-30000}"
 MOONCAKE_GRPC_PORT="${MOONCAKE_GRPC_PORT:-50052}"
 MOONCAKE_META_PORT="${MOONCAKE_META_PORT:-8090}"
 
-export TORCHSPEC_LOG_LEVEL=INFO
+export AURORA_LOG_LEVEL=INFO
 
 LOG_DIR="$ROOT_DIR/running_logs"
 mkdir -p "$LOG_DIR"
@@ -96,7 +96,7 @@ ray start --head --num-gpus "$TOTAL_GPUS" --port "$RAY_PORT" --disable-usage-sta
 
 # --- Step 2: Start training ---
 echo "Starting training (mooncake master + callback server will come up)..."
-python3 -m torchspec.train_entry \
+python3 -m aurora.train_entry \
     --config "$CONFIG_FILE" \
     dataset.train_data_path="$ROOT_DIR/datasets/onlinesd/merged/merged_train_data.jsonl" \
     output_dir="$ROOT_DIR/outputs/kimi-k25-nvfp4-external-no-draft" \

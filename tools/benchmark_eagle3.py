@@ -19,13 +19,13 @@ from typing import Tuple
 import torch
 from transformers.models.llama.configuration_llama import LlamaConfig
 
-from torchspec.models.draft.llama3_eagle import LlamaForCausalLMEagle3
-from torchspec.models.eagle3 import (
+from aurora.models.draft.llama3_eagle import LlamaForCausalLMEagle3
+from aurora.models.eagle3 import (
     Eagle3Model,
     compute_lazy_target_padded,
     compute_target_p_padded,
 )
-from torchspec.training.optimizer import BF16Optimizer
+from aurora.training.optimizer import BF16Optimizer
 
 
 # ---------------------------------------------------------------------------

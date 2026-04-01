@@ -58,7 +58,7 @@ elif [ "$MODE" = "current" ]; then
     pip install -e "${SGLANG_FOLDER_NAME}/python[all]"
     pip install -e ".[dev]"
 
-    echo "torchspec installed into current environment!"
+    echo "aurora installed into current environment!"
 else
     echo "Skipping package installation (mode=0)"
     echo "Please install packages manually:"

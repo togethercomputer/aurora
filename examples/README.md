@@ -54,64 +54,32 @@ Each example directory contains:
 
 ## Running an Example
 
-### Single-node examples (most common)
-
-**Applies to:** all `*-external-no-draft` and `*-external-with-draft` folders except the `*-2node` variant.
-
-**Step 1** — Launch training + sglang (stays in foreground):
-
 ```bash
-bash examples/<example-folder>/run.sh
+# 1. Start training + SGLang server
+bash examples/qwen3-4b-external-no-draft/run.sh
+
+# 2. In another terminal, send requests
+bash examples/qwen3-4b-external-no-draft/send_requests.sh
 ```
 
-`run.sh` orchestrates everything in order: Ray cluster → training → mooncake → callback server → (draft model creation, if applicable) → sglang server. It stays running and waits for training to finish.
+### Multi-node (2-node) example
 
-**Step 2** — In a **separate terminal**, send traffic once sglang is healthy:
+The `*-2node` examples split training and inference across two machines. Both nodes must share a filesystem (e.g., NFS) for the draft model checkpoint and weight sync.
 
-```bash
-bash examples/<example-folder>/send_requests.sh
-```
+A dataset must be provided to the trainer so it can build the vocab mapping before the draft model is created. The SGLang server on Node 2 runs independently — if the trainer on Node 1 crashes, the SGLang server continues serving requests unaffected.
 
-Only run this after `run.sh` prints that the sglang server is healthy.
-
-### 2-node examples
-
-**Applies to:** `qwen3-8b-coder-next-external-with-draft-2node`, `kimi-k25-nvfp4-external-no-draft`.
-
-Both nodes must share a filesystem (e.g., NFS) for the draft model checkpoint and weight sync.
-
-**Step 1** — On **Node 1** (trainer machine), launch training:
-
-```bash
-NODE2_IP=<inference-node-ip> bash examples/<example-folder>/run_node1_train.sh   # or run_trainer.sh
-```
-
-Wait until it prints **"Training callback server is ready"**.
-
-**Step 2** — On **Node 2** (inference machine), launch sglang:
-
-```bash
-NODE1_IP=<training-node-ip> bash examples/<example-folder>/run_node2_sglang.sh   # or run_sglang.sh
-```
-
-This connects back to Node 1's mooncake/callback server. Wait until sglang is healthy.
-
-**Step 3** — Send traffic (from either node):
-
-```bash
-SGLANG_URL=http://<inference-node-ip>:30000 \
-  bash examples/<example-folder>/send_requests.sh
-```
-
-### Online training (no external sglang)
-
-**Applies to:** `qwen3-coder-next-online`.
-
-```bash
-bash examples/qwen3-coder-next-online/run.sh
-```
-
-That's it — inference runs embedded inside the training process via `SglEngine`, so there is no separate sglang server and no `send_requests.sh`.
+1. **Machine 1:** Run `run_node1_train.sh`
+   ```bash
+   NODE2_IP=<inference-node-ip> bash examples/qwen3-8b-coder-next-external-with-draft-2node/run_node1_train.sh
+   ```
+2. **Machine 2:** Run `run_node2_sglang.sh` (after Node 1 prints "Node 1 is ready")
+   ```bash
+   NODE1_IP=<training-node-ip> bash examples/qwen3-8b-coder-next-external-with-draft-2node/run_node2_sglang.sh
+   ```
+3. **Machine 2:** Run `send_requests.sh`
+   ```bash
+   SGLANG_URL=http://<inference-node-ip>:30000 bash examples/qwen3-8b-coder-next-external-with-draft-2node/send_requests.sh
+   ```
 
 ### Config overrides
 

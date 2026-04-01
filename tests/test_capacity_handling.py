@@ -13,7 +13,7 @@ from unittest.mock import patch
 import pytest
 import torch
 
-from torchspec.utils.memory import estimate_tensor_bytes
+from aurora.utils.memory import estimate_tensor_bytes
 
 
 class TestEstimateTensorBytes:
@@ -123,7 +123,7 @@ def _create_mock_inference_output(
     tensor_dtypes: dict,
 ):
     """Create a mock InferenceOutput."""
-    from torchspec.utils.types import InferenceOutput
+    from aurora.utils.types import InferenceOutput
 
     return InferenceOutput(
         data_id=data_id,
@@ -138,7 +138,7 @@ def _create_controller_class():
     import importlib
     import sys
 
-    module_name = "torchspec.controller.training_controller"
+    module_name = "aurora.controller.training_controller"
     if module_name in sys.modules:
         del sys.modules[module_name]
 
@@ -463,7 +463,7 @@ class TestEmptyTensorShapes:
         assert controller.get_pool_size() == 1
 
     def test_push_result_with_none_shapes(self):
-        from torchspec.utils.types import InferenceOutput
+        from aurora.utils.types import InferenceOutput
 
         controller = self._create_controller()
 

@@ -21,7 +21,7 @@
 #
 # Environment variables:
 #   NODE1_IP        - (required) IP address of the training node
-#   DRAFT_MODEL     - Path to draft model (default: /scratch/shared/torchspec/scratch_draft_model)
+#   DRAFT_MODEL     - Path to draft model (default: /scratch/shared/aurora/scratch_draft_model)
 #   SGLANG_GPUS     - GPUs for sglang server (default: 0,1,2,3)
 #   SGLANG_PORT     - sglang server port (default: 30000)
 #   CALLBACK_PORT   - Training callback port on Node 1 (default: 18080)
@@ -49,7 +49,7 @@ MOONCAKE_META_PORT="${MOONCAKE_META_PORT:-8090}"
 TARGET_MODEL="${TARGET_MODEL:-/scratch/bobbie/hf_cache/Qwen3-Coder-Next}"
 
 # Shared filesystem (NFS) — must match OUTPUT_DIR from Node 1
-OUTPUT_DIR="${OUTPUT_DIR:-/data/bobbie/tmp/torchspec/qwen3-next-coder-external-2node}"
+OUTPUT_DIR="${OUTPUT_DIR:-/data/bobbie/tmp/aurora/qwen3-next-coder-external-2node}"
 DRAFT_MODEL="${DRAFT_MODEL:-$OUTPUT_DIR/scratch_draft_model}"
 
 # Speculative decoding settings

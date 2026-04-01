@@ -6,7 +6,7 @@ from typing import Dict, List, Tuple
 
 import torch
 
-from torchspec.training.data_fetcher import (
+from aurora.training.data_fetcher import (
     MooncakeDataFetcher,
     MooncakeDataset,
     TrainSample,

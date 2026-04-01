@@ -7,24 +7,24 @@ Aurora uses Ray as its distributed orchestration layer. In **online training** m
 `RayActor` is the base class for all GPU-bound actors. It provides GPU setup, IP discovery, and port allocation so each actor doesn't reinvent them.
 
 ```
-torchspec/ray/
+aurora/ray/
 ├── ray_actor.py                    RayActor base class
 ├── train_group.py                  RayTrainGroup (training actor group manager)
 └── placement_group.py              Placement group creation & GPU resource management
 
-torchspec/inference/engine/
+aurora/inference/engine/
 ├── hf_engine.py                    HFEngine(InferenceEngine, RayActor)
 └── sgl_engine.py                   SglEngine(InferenceEngine, RayActor)
 
-torchspec/training/
+aurora/training/
 ├── trainer.py                      Trainer (ABC base)
 ├── trainer_actor.py                TrainerActor(RayActor) — wraps Eagle3Trainer
 └── eagle3_trainer.py               Eagle3Trainer(Trainer) — FSDP2 training logic
 
-torchspec/transfer/mooncake/
+aurora/transfer/mooncake/
 └── utils.py                        MooncakeMaster(RayActor)
 
-torchspec/controller/
+aurora/controller/
 ├── training_controller.py          AsyncTrainingController (standalone Ray actor)
 ├── inference_manager.py            AsyncInferenceManager (standalone Ray actor)
 └── training_external_server.py     TrainingExternalServer (Ray actor — HTTP callback server for external sglang)
@@ -96,11 +96,11 @@ ray start \
 
 > **Important:** The example `run.sh` scripts are designed for single-node use —
 > they run `ray stop --force` and start their own local head node. For multi-node,
-> invoke `torchspec.train_entry` directly against the pre-existing cluster:
+> invoke `aurora.train_entry` directly against the pre-existing cluster:
 
 ```bash
 export RAY_ADDRESS=<HEAD_IP>:6379
-python3 -m torchspec.train_entry --config <your_config.yaml> [overrides...]
+python3 -m aurora.train_entry --config <your_config.yaml> [overrides...]
 ```
 
 Aurora auto-detects the cluster via `RAY_ADDRESS`. Worker nodes don't
@@ -117,7 +117,7 @@ manage their own local cluster):
 
 ```bash
 export RAY_ADDRESS=ray://<kuberay-head-svc>:10001
-python3 -m torchspec.train_entry --config <your_config.yaml> [overrides...]
+python3 -m aurora.train_entry --config <your_config.yaml> [overrides...]
 ```
 
 ### NCCL / Gloo networking

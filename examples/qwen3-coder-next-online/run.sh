@@ -31,7 +31,7 @@ TOTAL_GPUS=${#GPU_ARRAY[@]}
 TRAIN_GPUS="${TRAIN_GPUS:-2}"
 INFERENCE_GPUS="${INFERENCE_GPUS:-4}"
 
-export TORCHSPEC_LOG_LEVEL=INFO
+export AURORA_LOG_LEVEL=INFO
 
 LOG_DIR="$ROOT_DIR/running_logs"
 mkdir -p "$LOG_DIR"
@@ -59,7 +59,7 @@ ray stop --force 2>/dev/null || true
 echo "Starting Ray on port $RAY_PORT with $TOTAL_GPUS GPUs..."
 ray start --head --num-gpus "$TOTAL_GPUS" --port "$RAY_PORT" --disable-usage-stats
 
-python3 -m torchspec.train_entry \
+python3 -m aurora.train_entry \
     --config "$CONFIG_FILE" \
     dataset.train_data_path="$ROOT_DIR/datasets/onlinesd/merged/merged_code_train_shuffled.jsonl" \
     training.training_num_gpus_per_node="$TRAIN_GPUS" \

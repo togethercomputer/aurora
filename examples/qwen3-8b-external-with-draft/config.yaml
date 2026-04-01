@@ -7,7 +7,7 @@
 #   - 2 GPUs for training (DP/FSDP: draft model sharded)
 #
 # Usage:
-#   python -m torchspec.train_entry --config configs/sglang_qwen3_8b_external.yaml
+#   python -m aurora.train_entry --config configs/sglang_qwen3_8b_external.yaml
 
 model:
   target_model_path: Qwen/Qwen3-8B

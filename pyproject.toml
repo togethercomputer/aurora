@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "torchspec"
+name = "aurora"
 dynamic = ["version", "description"]
 readme = "README.md"
 requires-python = ">=3.12"
@@ -32,7 +32,7 @@ dependencies = [
 ]
 
 [tool.setuptools]
-packages = ["torchspec"]
+packages = ["aurora"]
 
 [project.optional-dependencies]
 dev = [
@@ -64,5 +64,5 @@ ignore = ["E501"]
 ban-relative-imports = "all"
 
 [tool.ruff.lint.isort]
-known-first-party = ["torchspec"]
+known-first-party = ["aurora"]
 known-third-party = ["wandb"]

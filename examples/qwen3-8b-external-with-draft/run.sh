@@ -2,7 +2,7 @@
 # Train with SglEngine in decode mode + external sglang server (hybrid mode)
 #
 # This script:
-#   1. Starts torchspec training (which starts mooncake + TrainingExternalServer)
+#   1. Starts aurora training (which starts mooncake + TrainingExternalServer)
 #   2. Waits for the training callback server to be ready
 #   3. Starts a standalone sglang server with --spec-training-callback-url
 #   4. Waits for the sglang server to be healthy
@@ -80,7 +80,7 @@ MAX_RUNNING_REQUESTS="${MAX_RUNNING_REQUESTS:-12}"
 IFS=',' read -ra SGLANG_GPU_ARRAY <<< "$SGLANG_GPUS"
 SGLANG_TP_SIZE="${SGLANG_TP_SIZE:-${#SGLANG_GPU_ARRAY[@]}}"
 
-export TORCHSPEC_LOG_LEVEL=INFO
+export AURORA_LOG_LEVEL=INFO
 
 LOG_DIR="$ROOT_DIR/running_logs"
 mkdir -p "$LOG_DIR"
@@ -140,7 +140,7 @@ ray start --head --num-gpus "$TOTAL_GPUS" --port "$RAY_PORT" --disable-usage-sta
 
 # --- Step 2: Start training in background (starts mooncake + callback server) ---
 echo "Starting training (mooncake master + callback server will come up)..."
-python3 -m torchspec.train_entry \
+python3 -m aurora.train_entry \
     --config "$CONFIG_FILE" \
     dataset.train_data_path="$ROOT_DIR/datasets/onlinesd/merged/merged_train_data.jsonl" \
     output_dir="$ROOT_DIR/outputs/qwen3-8b-external-with-draft" \

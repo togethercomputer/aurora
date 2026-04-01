@@ -95,7 +95,7 @@ echo "Generating patch from $SGLANG_COMMIT to HEAD..."
 # git apply ignores lines before the first "diff --git" line,
 # so the diffstat is purely informational for human readers.
 {
-    echo "torchspec sglang patch (base: ${SGLANG_COMMIT:0:10})"
+    echo "aurora sglang patch (base: ${SGLANG_COMMIT:0:10})"
     echo "---"
     git diff --stat "$SGLANG_COMMIT" HEAD
     echo ""

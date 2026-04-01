@@ -6,7 +6,7 @@ import tempfile
 from argparse import Namespace
 from unittest import mock
 
-from torchspec.transfer.mooncake.utils import (
+from aurora.transfer.mooncake.utils import (
     MooncakeMaster,
     launch_mooncake_master,
     resolve_mooncake_master_bin,
@@ -45,13 +45,13 @@ class TestMooncakeMaster:
 
         with (
             mock.patch(
-                "torchspec.transfer.mooncake.utils.resolve_mooncake_master_bin",
+                "aurora.transfer.mooncake.utils.resolve_mooncake_master_bin",
                 return_value="/usr/bin/mooncake_master",
             ),
             mock.patch("os.path.exists", return_value=True),
             mock.patch("subprocess.Popen", return_value=mock_process) as mock_popen,
             mock.patch("time.sleep"),
-            mock.patch("torchspec.ray.ray_actor.get_current_node_ip", return_value="10.0.0.1"),
+            mock.patch("aurora.ray.ray_actor.get_current_node_ip", return_value="10.0.0.1"),
         ):
             info = actor.start(50051, 8090, "0.0.0.0")
 
@@ -68,7 +68,7 @@ class TestMooncakeMaster:
         actor = MooncakeMaster()
         with (
             mock.patch(
-                "torchspec.transfer.mooncake.utils.resolve_mooncake_master_bin",
+                "aurora.transfer.mooncake.utils.resolve_mooncake_master_bin",
                 return_value="/nonexistent/mooncake_master",
             ),
             mock.patch("os.path.exists", return_value=False),
@@ -89,7 +89,7 @@ class TestMooncakeMaster:
 
         with (
             mock.patch(
-                "torchspec.transfer.mooncake.utils.resolve_mooncake_master_bin",
+                "aurora.transfer.mooncake.utils.resolve_mooncake_master_bin",
                 return_value="/usr/bin/mooncake_master",
             ),
             mock.patch("os.path.exists", return_value=True),
@@ -178,7 +178,7 @@ class TestLaunchMooncakeMaster:
 
         with (
             mock.patch(
-                "torchspec.transfer.mooncake.utils.resolve_mooncake_master_bin",
+                "aurora.transfer.mooncake.utils.resolve_mooncake_master_bin",
                 return_value="/usr/bin/mooncake_master",
             ),
             mock.patch("os.path.exists", return_value=True),
@@ -210,13 +210,13 @@ class TestLaunchMooncakeMaster:
 
         with (
             mock.patch(
-                "torchspec.transfer.mooncake.utils.resolve_mooncake_master_bin",
+                "aurora.transfer.mooncake.utils.resolve_mooncake_master_bin",
                 return_value="/usr/bin/mooncake_master",
             ),
             mock.patch("os.path.exists", return_value=True),
-            mock.patch("torchspec.ray.ray_actor.get_current_node_ip", return_value="10.0.0.1"),
+            mock.patch("aurora.ray.ray_actor.get_current_node_ip", return_value="10.0.0.1"),
             mock.patch(
-                "torchspec.ray.ray_actor.get_free_port",
+                "aurora.ray.ray_actor.get_free_port",
                 side_effect=[55000, 8500],
             ),
             mock.patch("ray.remote", return_value=mock_decorator),
@@ -237,7 +237,7 @@ class TestLaunchMooncakeMaster:
 
         with (
             mock.patch(
-                "torchspec.transfer.mooncake.utils.resolve_mooncake_master_bin",
+                "aurora.transfer.mooncake.utils.resolve_mooncake_master_bin",
                 return_value="/nonexistent/path/mooncake_master",
             ),
             mock.patch("os.path.exists", return_value=False),
@@ -258,7 +258,7 @@ class TestLaunchMooncakeMaster:
 
         with (
             mock.patch(
-                "torchspec.transfer.mooncake.utils.resolve_mooncake_master_bin",
+                "aurora.transfer.mooncake.utils.resolve_mooncake_master_bin",
                 return_value="/usr/bin/mooncake_master",
             ),
             mock.patch("os.path.exists", return_value=True),
@@ -288,10 +288,10 @@ class TestMooncakeMasterIntegration:
 
             with (
                 mock.patch(
-                    "torchspec.transfer.mooncake.utils.resolve_mooncake_master_bin",
+                    "aurora.transfer.mooncake.utils.resolve_mooncake_master_bin",
                     return_value=script_path,
                 ),
-                mock.patch("torchspec.ray.ray_actor.get_current_node_ip", return_value="127.0.0.1"),
+                mock.patch("aurora.ray.ray_actor.get_current_node_ip", return_value="127.0.0.1"),
             ):
                 info = actor.start(50051, 8090, "0.0.0.0")
 

@@ -3,7 +3,7 @@
 ## Package Layout
 
 ```
-torchspec/
+aurora/
 ├── config/                  # Configuration system (OmegaConf-based)
 │   ├── train_config.py      #   Hierarchical dataclass configs (7 sections + Config root)
 │   ├── inference_config.py  #   InferenceConfig + SGLangConfig (essential fields + extra_args passthrough)
@@ -63,7 +63,7 @@ torchspec/
 │   └── utils.py             #   Loss mask packing/unpacking
 ├── utils/                   # Shared utilities
 │   ├── distributed.py       #   Device mesh setup, TP/DP primitives (get_tp_group, get_tp_device_mesh)
-│   ├── env.py               #   Ray actor env-var forwarding (get_torchspec_env_vars)
+│   ├── env.py               #   Ray actor env-var forwarding (get_aurora_env_vars)
 │   ├── logging.py           #   Unified logger
 │   ├── memory.py            #   Tensor byte estimation
 │   ├── profiling.py         #   PyTorch profiler utilities
@@ -78,7 +78,7 @@ torchspec/
 
 ## Core Components
 
-### 1. Draft Model (`torchspec/models/draft/`)
+### 1. Draft Model (`aurora/models/draft/`)
 
 A lightweight transformer initialized from the target model's architecture:
 
@@ -90,7 +90,7 @@ A lightweight transformer initialized from the target model's architecture:
   - Hidden state projection from target model
   - Token-to-draft vocabulary mapping (`t2d`)
 
-### 2. Target Model (`torchspec/models/target/`)
+### 2. Target Model (`aurora/models/target/`)
 
 Abstract interface for running the target model during inference:
 
@@ -102,7 +102,7 @@ The target model extracts:
 - **Hidden states** from configurable layers (`aux_hidden_states_layers`)
 - **Logits** for computing soft labels (KL divergence targets)
 
-### 3. Async Training Controller (`torchspec/controller/training_controller.py`)
+### 3. Async Training Controller (`aurora/controller/training_controller.py`)
 
 Central orchestrator (Ray actor) managing the async pipeline:
 
@@ -123,13 +123,13 @@ class AsyncTrainingController:
 
 The controller only manages metadata and Mooncake keys, never actual tensor data. It tracks exact bytes in the sample pool for Mooncake backpressure control.
 
-### 4. Async Inference Manager (`torchspec/controller/inference_manager.py`)
+### 4. Async Inference Manager (`aurora/controller/inference_manager.py`)
 
 Self-regulating inference manager (Ray actor) that dispatches to `HFEngine` / `SglEngine` Ray actors with load balancing.
 
 Includes Mooncake backpressure: pauses generation when `sample_pool` exceeds capacity, resuming when training catches up.
 
-### 5. Inference Engines (`torchspec/inference/engine/`)
+### 5. Inference Engines (`aurora/inference/engine/`)
 
 - **`base.py`**: `InferenceEngine` - Abstract base class defining the unified engine interface
 - **`hf_runner.py`**: `HFRunner` - Core inference logic that runs target model, extracts hidden states, and stores tensors in Mooncake
@@ -138,7 +138,7 @@ Includes Mooncake backpressure: pauses generation when `sample_pool` exceeds cap
 
 Factory function in `factory.py`: `create_inference_engines()`
 
-### 6. Training (`torchspec/training/`)
+### 6. Training (`aurora/training/`)
 
 The training side is split across three layers:
 
@@ -147,7 +147,7 @@ The training side is split across three layers:
 - **`eagle3_trainer.py`**: `Eagle3Trainer(Trainer)` — Eagle3-specific logic: initialises `Eagle3Model` with the draft model under FSDP2, runs the forward/backward, and aggregates metrics
 - **`fsdp.py`**: FSDP2 helpers (`apply_fsdp2`, `fsdp2_load_full_state_dict`, `init_empty_weights`)
 
-### 7. Mooncake Integration (`torchspec/transfer/mooncake/`)
+### 7. Mooncake Integration (`aurora/transfer/mooncake/`)
 
 Distributed tensor transfer for multi-node training:
 
@@ -187,7 +187,7 @@ Distributed tensor transfer for multi-node training:
    └── Periodic checkpointing
 ```
 
-## Configuration System (`torchspec/config/`)
+## Configuration System (`aurora/config/`)
 
 Hierarchical YAML configs powered by OmegaConf, with 9 typed dataclass sections:
 
@@ -225,7 +225,7 @@ mooncake:
 
 logging:
   report_to: wandb
-  wandb_project: torchspec
+  wandb_project: aurora
 
 debug:
   use_pytorch_profiler: false
@@ -242,85 +242,85 @@ python train.py --config base.yaml --config experiment.yaml training.learning_ra
 
 | Module | Purpose |
 |--------|---------|
-| `torchspec/models/eagle3.py` | `Eagle3Model` - Eagle3 forward pass and loss computation |
-| `torchspec/models/ops/loss.py` | `compiled_forward_kl_loss` - Forward KL loss |
-| `torchspec/models/ops/loss_mask.py` | Loss mask computation utilities |
-| `torchspec/models/ops/flex_attention.py` | FlexAttention utilities |
-| `torchspec/models/draft/auto.py` | `AutoEagle3DraftModel` factory |
-| `torchspec/models/draft/base.py` | `Eagle3DraftModel` abstract base |
-| `torchspec/models/draft/llama3_eagle.py` | `LlamaForCausalLMEagle3` implementation |
-| `torchspec/models/target/eagle3_target_model.py` | `Eagle3TargetModel` ABC + `HFTargetModel` implementation |
-| `torchspec/models/target/target_utils.py` | Hidden state layer selection utilities |
+| `aurora/models/eagle3.py` | `Eagle3Model` - Eagle3 forward pass and loss computation |
+| `aurora/models/ops/loss.py` | `compiled_forward_kl_loss` - Forward KL loss |
+| `aurora/models/ops/loss_mask.py` | Loss mask computation utilities |
+| `aurora/models/ops/flex_attention.py` | FlexAttention utilities |
+| `aurora/models/draft/auto.py` | `AutoEagle3DraftModel` factory |
+| `aurora/models/draft/base.py` | `Eagle3DraftModel` abstract base |
+| `aurora/models/draft/llama3_eagle.py` | `LlamaForCausalLMEagle3` implementation |
+| `aurora/models/target/eagle3_target_model.py` | `Eagle3TargetModel` ABC + `HFTargetModel` implementation |
+| `aurora/models/target/target_utils.py` | Hidden state layer selection utilities |
 
 ### Ray Infrastructure
 
 | Module | Purpose |
 |--------|---------|
-| `torchspec/ray/ray_actor.py` | `RayActor` base class (GPU setup, IP/port utils, master addr negotiation) |
-| `torchspec/ray/train_group.py` | `RayTrainGroup` - Manages a group of training actors |
-| `torchspec/ray/placement_group.py` | Placement group creation, GPU resource waiting, `create_placement_groups()`, `create_train_group()` |
+| `aurora/ray/ray_actor.py` | `RayActor` base class (GPU setup, IP/port utils, master addr negotiation) |
+| `aurora/ray/train_group.py` | `RayTrainGroup` - Manages a group of training actors |
+| `aurora/ray/placement_group.py` | Placement group creation, GPU resource waiting, `create_placement_groups()`, `create_train_group()` |
 
 ### Controller
 
 | Module | Purpose |
 |--------|---------|
-| `torchspec/controller/training_controller.py` | `AsyncTrainingController` - Pipeline orchestration |
-| `torchspec/controller/inference_manager.py` | `AsyncInferenceManager` - Inference dispatch and backpressure |
-| `torchspec/controller/loop.py` | `run_training_loop()` - Main training loop |
-| `torchspec/controller/setup.py` | `build_mooncake_config`, `setup_async_training_with_engines`, `auto_calculate_training_steps` |
+| `aurora/controller/training_controller.py` | `AsyncTrainingController` - Pipeline orchestration |
+| `aurora/controller/inference_manager.py` | `AsyncInferenceManager` - Inference dispatch and backpressure |
+| `aurora/controller/loop.py` | `run_training_loop()` - Main training loop |
+| `aurora/controller/setup.py` | `build_mooncake_config`, `setup_async_training_with_engines`, `auto_calculate_training_steps` |
 
 ### Inference
 
 | Module | Purpose |
 |--------|---------|
-| `torchspec/inference/factory.py` | `create_inference_engines()` - Engine creation with placement groups |
-| `torchspec/inference/engine/base.py` | `InferenceEngine` abstract base class |
-| `torchspec/inference/engine/hf_runner.py` | `HFRunner` core inference logic |
-| `torchspec/inference/engine/hf_engine.py` | `HFEngine` Ray actor wrapper (inherits `RayActor`) |
-| `torchspec/inference/engine/sgl_engine.py` | `SglEngine` Ray actor wrapper (inherits `RayActor`) |
+| `aurora/inference/factory.py` | `create_inference_engines()` - Engine creation with placement groups |
+| `aurora/inference/engine/base.py` | `InferenceEngine` abstract base class |
+| `aurora/inference/engine/hf_runner.py` | `HFRunner` core inference logic |
+| `aurora/inference/engine/hf_engine.py` | `HFEngine` Ray actor wrapper (inherits `RayActor`) |
+| `aurora/inference/engine/sgl_engine.py` | `SglEngine` Ray actor wrapper (inherits `RayActor`) |
 
 ### Training
 
 | Module | Purpose |
 |--------|-------|
-| `torchspec/training/trainer_actor.py` | `TrainerActor` - Ray actor wrapper; owns distributed process group |
-| `torchspec/training/trainer.py` | `Trainer` - Abstract base (device mesh, data fetcher, loop skeleton) |
-| `torchspec/training/eagle3_trainer.py` | `Eagle3Trainer` - Eagle3 model init, forward/backward, metric aggregation |
-| `torchspec/training/fsdp.py` | `apply_fsdp2`, `fsdp2_load_full_state_dict`, `init_empty_weights` |
-| `torchspec/training/data_fetcher.py` | `MooncakeDataFetcher` - Queue-based data retrieval |
-| `torchspec/training/checkpoint.py` | Checkpoint save/load |
-| `torchspec/training/optimizer.py` | `BF16Optimizer` construction |
-| `torchspec/training/lr_scheduler.py` | LR scheduling |
+| `aurora/training/trainer_actor.py` | `TrainerActor` - Ray actor wrapper; owns distributed process group |
+| `aurora/training/trainer.py` | `Trainer` - Abstract base (device mesh, data fetcher, loop skeleton) |
+| `aurora/training/eagle3_trainer.py` | `Eagle3Trainer` - Eagle3 model init, forward/backward, metric aggregation |
+| `aurora/training/fsdp.py` | `apply_fsdp2`, `fsdp2_load_full_state_dict`, `init_empty_weights` |
+| `aurora/training/data_fetcher.py` | `MooncakeDataFetcher` - Queue-based data retrieval |
+| `aurora/training/checkpoint.py` | Checkpoint save/load |
+| `aurora/training/optimizer.py` | `BF16Optimizer` construction |
+| `aurora/training/lr_scheduler.py` | LR scheduling |
 
 ### Data Pipeline
 
 | Module | Purpose |
 |--------|---------|
-| `torchspec/data/dataset.py` | `load_conversation_dataset()` with format detection |
-| `torchspec/data/parse.py` | Chat format parsers (`GeneralParser`, etc.) |
-| `torchspec/data/preprocessing.py` | Tokenization, chat templates, loss masks |
-| `torchspec/data/template.py` | Chat template handling |
-| `torchspec/data/utils.py` | Loss mask packing/unpacking |
+| `aurora/data/dataset.py` | `load_conversation_dataset()` with format detection |
+| `aurora/data/parse.py` | Chat format parsers (`GeneralParser`, etc.) |
+| `aurora/data/preprocessing.py` | Tokenization, chat templates, loss masks |
+| `aurora/data/template.py` | Chat template handling |
+| `aurora/data/utils.py` | Loss mask packing/unpacking |
 
 ### Configuration
 
 | Module | Purpose |
 |--------|-------|
-| `torchspec/config/train_config.py` | `Config` root + 7 typed dataclass sections (`DatasetConfig`, `DebugConfig`, `InferenceConfig`, `LoggingConfig`, `ModelConfig`, `TrainingConfig`, plus `mooncake: dict`) |
-| `torchspec/config/inference_config.py` | `InferenceConfig`, `SGLangConfig` (essential fields + `extra_args` passthrough), `HFInferenceConfig` |
-| `torchspec/config/mooncake_config.py` | `MooncakeConfig` with env-var support and `from_flat_args()` |
-| `torchspec/config/utils.py` | Config loading helpers, `generate_draft_model_config` |
+| `aurora/config/train_config.py` | `Config` root + 7 typed dataclass sections (`DatasetConfig`, `DebugConfig`, `InferenceConfig`, `LoggingConfig`, `ModelConfig`, `TrainingConfig`, plus `mooncake: dict`) |
+| `aurora/config/inference_config.py` | `InferenceConfig`, `SGLangConfig` (essential fields + `extra_args` passthrough), `HFInferenceConfig` |
+| `aurora/config/mooncake_config.py` | `MooncakeConfig` with env-var support and `from_flat_args()` |
+| `aurora/config/utils.py` | Config loading helpers, `generate_draft_model_config` |
 
 ### Infrastructure
 
 | Module | Purpose |
 |--------|-------|
-| `torchspec/transfer/mooncake/` | Mooncake tensor transfer (RDMA/TCP, buffer pools, deferred delete) |
-| `torchspec/utils/distributed.py` | Device mesh setup, TP/DP primitives (`get_tp_group`, `get_tp_device_mesh`) |
-| `torchspec/utils/env.py` | Ray actor env-var forwarding (`get_torchspec_env_vars`) |
-| `torchspec/utils/logging.py` | Unified logger |
-| `torchspec/utils/profiling.py` | PyTorch profiler utilities |
-| `torchspec/utils/types.py` | `InferenceInput`, `InferenceOutput` |
-| `torchspec/utils/memory.py` | Tensor byte estimation |
-| `torchspec/utils/wandb.py` | Weights & Biases integration |
-| `torchspec/train_entry.py` | Main entry point (config parsing, Ray setup, launch) |
+| `aurora/transfer/mooncake/` | Mooncake tensor transfer (RDMA/TCP, buffer pools, deferred delete) |
+| `aurora/utils/distributed.py` | Device mesh setup, TP/DP primitives (`get_tp_group`, `get_tp_device_mesh`) |
+| `aurora/utils/env.py` | Ray actor env-var forwarding (`get_aurora_env_vars`) |
+| `aurora/utils/logging.py` | Unified logger |
+| `aurora/utils/profiling.py` | PyTorch profiler utilities |
+| `aurora/utils/types.py` | `InferenceInput`, `InferenceOutput` |
+| `aurora/utils/memory.py` | Tensor byte estimation |
+| `aurora/utils/wandb.py` | Weights & Biases integration |
+| `aurora/train_entry.py` | Main entry point (config parsing, Ray setup, launch) |

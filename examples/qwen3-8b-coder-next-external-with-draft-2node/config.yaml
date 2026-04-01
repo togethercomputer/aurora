@@ -3,7 +3,7 @@
 # Target model: Qwen/Qwen3-Coder-Next (80B MoE, 3B active params)
 #
 # Two-node setup:
-#   Node 1 (training): runs torchspec training actors + mooncake master + callback server
+#   Node 1 (training): runs aurora training actors + mooncake master + callback server
 #   Node 2 (inference): runs standalone sglang server with EAGLE3 speculative decoding
 #
 # Requirements:

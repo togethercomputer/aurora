@@ -1,6 +1,6 @@
 # Aurora
 
-Aurora is a unified training-serving system for online speculative decoding. It closes the loop between speculator training and serving by continuously learning a draft model directly from live inference traces — treating online speculator learning as an asynchronous reinforcement-learning problem. Aurora is built on top of [TorchSpec](https://github.com/xwuShirley/torchspec).
+Aurora is a unified training-serving system for online speculative decoding. It closes the loop between speculator training and serving by continuously learning a draft model directly from live inference traces — treating online speculator learning as an asynchronous reinforcement-learning problem. Aurora is built on top of [TorchSpec](https://github.com/xwuShirley/aurora).
 
 Aurora supports **day-0 deployment**: a speculator can be served immediately and rapidly adapted to live traffic, improving system performance while providing immediate utility feedback. Across experiments, Aurora achieves a **1.5x day-0 speedup** on recently released frontier models (e.g., MiniMax-M2.1 and Qwen3-Coder-Next), and adapts effectively to distribution shifts in user traffic, delivering an additional **1.25x speedup** over a well-trained but static speculator on widely used models (e.g., Qwen3).
 
@@ -50,7 +50,7 @@ See [`examples/README.md`](examples/README.md) for the full example catalog, per
 
 ## Production Notes
 
-- The example `run.sh` scripts are **single-node oriented** — they manage their own local Ray cluster. For multi-node or Kubernetes deployments, start Ray manually and invoke `python3 -m torchspec.train_entry` directly. See [docs/ray.md](docs/ray.md).
+- The example `run.sh` scripts are **single-node oriented** — they manage their own local Ray cluster. For multi-node or Kubernetes deployments, start Ray manually and invoke `python3 -m aurora.train_entry` directly. See [docs/ray.md](docs/ray.md).
 - **External with-draft** mode requires a **shared filesystem** between training and the SGLang server for draft weight sync.
 - `online_serving.hidden_states_dtype` must match the serving model's dtype (e.g., set `float16` when serving an FP8 model).
 - Training and inference GPU sets (`CUDA_VISIBLE_DEVICES` vs `SGLANG_GPUS`) **must not overlap**.
@@ -90,7 +90,7 @@ W&B logging is disabled by default (report_to: none). To enable it, set report_t
 Enable verbose logging:
 
 ```bash
-TORCHSPEC_LOG_LEVEL=DEBUG bash examples/qwen3-4b-external-with-draft/run.sh
+AURORA_LOG_LEVEL=DEBUG bash examples/qwen3-4b-external-with-draft/run.sh
 ```
 
 ## Citation

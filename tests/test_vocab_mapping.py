@@ -1,4 +1,4 @@
-"""Test generate_vocab_mapping and _count_token_frequencies from torchspec.data.preprocessing.
+"""Test generate_vocab_mapping and _count_token_frequencies from aurora.data.preprocessing.
 
 Verifies that:
   - Token counting via packed_loss_mask matches a reference implementation.
@@ -11,12 +11,12 @@ from collections import Counter
 import pytest
 import torch
 
-from torchspec.data.preprocessing import (
+from aurora.data.preprocessing import (
     _count_token_frequencies,
     generate_vocab_mapping,
     process_token_dict_to_mappings,
 )
-from torchspec.data.utils import pack_loss_mask, serialize_packed_loss_mask
+from aurora.data.utils import pack_loss_mask, serialize_packed_loss_mask
 
 
 def _make_prompts(input_ids_list, loss_mask_list):

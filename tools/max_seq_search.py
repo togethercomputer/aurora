@@ -24,12 +24,12 @@ from typing import Optional
 import torch
 import torch.nn as nn
 
-from torchspec import AutoDraftModelConfig, AutoEagle3DraftModel, Eagle3Model
-from torchspec.config.utils import generate_draft_model_config
-from torchspec.models.eagle3 import compute_lazy_target_padded, compute_target_p_padded
-from torchspec.models.target.target_utils import TargetLMHead
-from torchspec.training.optimizer import BF16Optimizer
-from torchspec.utils.memory import available_memory, clear_memory
+from aurora import AutoDraftModelConfig, AutoEagle3DraftModel, Eagle3Model
+from aurora.config.utils import generate_draft_model_config
+from aurora.models.eagle3 import compute_lazy_target_padded, compute_target_p_padded
+from aurora.models.target.target_utils import TargetLMHead
+from aurora.training.optimizer import BF16Optimizer
+from aurora.utils.memory import available_memory, clear_memory
 
 
 def create_synthetic_batch(

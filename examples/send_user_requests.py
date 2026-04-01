@@ -68,7 +68,7 @@ def load_dataset(path: str, prompt_key: str = "conversations"):
 
 def _normalize_conversation(conversation):
     """Normalize ShareGPT format (from/value) to standard (role/content).
-    Mirrors torchspec.data.preprocessing._normalize_conversation."""
+    Mirrors aurora.data.preprocessing._normalize_conversation."""
     ROLE_MAPPING = {"human": "user", "gpt": "assistant"}
     if not conversation:
         return conversation
@@ -96,15 +96,15 @@ def _strip_trailing_assistant(messages):
 
 
 def format_prompt(messages, tokenizer, chat_template_name="qwen"):
-    """Apply chat template matching torchspec's GeneralParser.format().
+    """Apply chat template matching aurora's GeneralParser.format().
 
-    Steps (mirroring torchspec/data/parse.py GeneralParser.format):
+    Steps (mirroring aurora/data/parse.py GeneralParser.format):
     1. Normalize ShareGPT format
     2. Inject system prompt from template if not present
     3. Strip trailing assistant messages (we want the model to generate)
     4. Apply tokenizer chat template with add_generation_prompt=True
     """
-    from torchspec.data.template import TEMPLATE_REGISTRY
+    from aurora.data.template import TEMPLATE_REGISTRY
 
     messages = _normalize_conversation(messages)
     messages = _strip_trailing_assistant(messages)

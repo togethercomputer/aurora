@@ -6,7 +6,7 @@
 # This script runs on the TRAINING node and:
 #   1. Starts Ray cluster (head node)
 #   2. Starts mooncake master
-#   3. Starts torchspec training actors
+#   3. Starts aurora training actors
 #   4. Starts the callback HTTP server (receives samples from Node 2's sglang)
 #   5. Periodically syncs draft model weights to Node 2 via shared filesystem
 #
@@ -22,7 +22,7 @@
 #
 # Environment variables:
 #   NODE2_IP        - (required) IP address of the inference node
-#   SHARED_DIR      - Shared filesystem path for weight sync (default: /scratch/shared/torchspec)
+#   SHARED_DIR      - Shared filesystem path for weight sync (default: /scratch/shared/aurora)
 #   SGLANG_PORT     - sglang server port on Node 2 (default: 30000)
 #   CALLBACK_PORT   - Training callback server port (default: 18080)
 
@@ -58,12 +58,12 @@ MOONCAKE_GRPC_PORT="${MOONCAKE_GRPC_PORT:-50052}"
 MOONCAKE_META_PORT="${MOONCAKE_META_PORT:-8090}"
 # Output dir on shared filesystem (NFS) — must be accessible from both nodes
 # so Node 2 can read the scratch draft model and weight sync checkpoints.
-OUTPUT_DIR="${OUTPUT_DIR:-/data/bobbie/tmp/torchspec/qwen3-next-coder-external-2node}"
+OUTPUT_DIR="${OUTPUT_DIR:-/data/bobbie/tmp/aurora/qwen3-next-coder-external-2node}"
 SCRATCH_DRAFT_DIR="$OUTPUT_DIR/scratch_draft_model"
-WEIGHT_SYNC_DIR="~/weight_sync"
+WEIGHT_SYNC_DIR="$HOME/weight_sync"
 mkdir -p "$OUTPUT_DIR"
 
-export TORCHSPEC_LOG_LEVEL=INFO
+export AURORA_LOG_LEVEL=INFO
 
 LOG_DIR="$ROOT_DIR/running_logs"
 mkdir -p "$LOG_DIR"
@@ -116,7 +116,7 @@ ray start --head --num-gpus "$TOTAL_GPUS" --port "$RAY_PORT" --disable-usage-sta
 # The sglang server on Node 2 connects to this node's mooncake master
 # and sends callbacks to this node's callback server.
 echo "Starting training..."
-python3 -m torchspec.train_entry \
+python3 -m aurora.train_entry \
     --config "$CONFIG_FILE" \
     dataset.train_data_path="$ROOT_DIR/datasets/onlinesd/merged/merged_train_data.jsonl" \
     output_dir="$OUTPUT_DIR" \

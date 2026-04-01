@@ -7,7 +7,7 @@ Thank you for your interest in contributing to Aurora! This guide will help you 
 1. Clone the repository and create the conda environment:
 
 ```bash
-git clone https://github.com/torchspec-project/aurora.git
+git clone https://github.com/aurora-project/aurora.git
 cd aurora
 ./tools/build_conda.sh
 micromamba activate aurora

@@ -122,8 +122,8 @@ def set_mooncake_env(host, grpc_port, http_port):
 def test_spec_training(model_path, aux_layer_ids=None):
     import sglang as sgl
 
-    from torchspec.config.mooncake_config import MooncakeConfig
-    from torchspec.transfer.mooncake import EagleMooncakeStore
+    from aurora.config.mooncake_config import MooncakeConfig
+    from aurora.transfer.mooncake import EagleMooncakeStore
 
     if aux_layer_ids is None:
         from transformers import AutoConfig

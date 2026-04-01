@@ -3,7 +3,7 @@
 #
 # This script:
 #   1. Starts Ray cluster
-#   2. Starts torchspec training (mooncake + callback server)
+#   2. Starts aurora training (mooncake + callback server)
 #   3. Waits for the training callback server to be ready
 #   4. Starts a standalone sglang server WITHOUT speculative decoding
 #   5. Waits for the sglang server to be healthy
@@ -56,7 +56,7 @@ MAX_RUNNING_REQUESTS="${MAX_RUNNING_REQUESTS:-12}"
 IFS=',' read -ra SGLANG_GPU_ARRAY <<< "$SGLANG_GPUS"
 SGLANG_TP_SIZE="${SGLANG_TP_SIZE:-${#SGLANG_GPU_ARRAY[@]}}"
 
-export TORCHSPEC_LOG_LEVEL=INFO
+export AURORA_LOG_LEVEL=INFO
 
 LOG_DIR="$ROOT_DIR/running_logs"
 mkdir -p "$LOG_DIR"
@@ -115,7 +115,7 @@ ray start --head --num-gpus "$TOTAL_GPUS" --port "$RAY_PORT" --disable-usage-sta
 
 # --- Step 2: Start training in background ---
 echo "Starting training (mooncake master + callback server will come up)..."
-python3 -m torchspec.train_entry \
+python3 -m aurora.train_entry \
     --config "$CONFIG_FILE" \
     dataset.train_data_path="$ROOT_DIR/datasets/onlinesd/merged/merged_train_data.jsonl" \
     output_dir="$ROOT_DIR/outputs/qwen3-4b-external-no-draft" \

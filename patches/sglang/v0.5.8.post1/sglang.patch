@@ -690,7 +690,7 @@ index e818deaa4..4e2ac4a1c 100644
 +        self._decode_lhs_storage = {}
 +        if self.server_args.enable_spec_training_mooncake:
 +            try:
-+                from torchspec.transfer.mooncake import (
++                from aurora.transfer.mooncake import (
 +                    EagleMooncakeStore,
 +                    MooncakeConfig,
 +                )
@@ -702,7 +702,7 @@ index e818deaa4..4e2ac4a1c 100644
 +                logger.info("EagleMooncakeStore initialized for spec training")
 +            except ImportError:
 +                logger.warning(
-+                    "torchspec.mooncake not found. Spec training mooncake store disabled."
++                    "aurora.mooncake not found. Spec training mooncake store disabled."
 +                )
 +
      def init_chunked_prefill(self):

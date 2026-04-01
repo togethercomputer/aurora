@@ -64,13 +64,13 @@ tail "$RAY_TEMP_DIR/session_latest/logs/monitor.log"
 ### 4. Environment variable for log verbosity
 
 ```bash
-export TORCHSPEC_LOG_LEVEL=DEBUG   # default is INFO; DEBUG gives per-step detail
+export AURORA_LOG_LEVEL=DEBUG   # default is INFO; DEBUG gives per-step detail
 export NCCL_DEBUG=INFO             # NCCL connection/transport debugging
 ```
 
 ## Startup Sequence & What to Expect
 
-The training entry point (`torchspec/train_entry.py → train_async_no_generation`) proceeds through these phases. If the job appears stuck, identify which phase it's in.
+The training entry point (`aurora/train_entry.py → train_async_no_generation`) proceeds through these phases. If the job appears stuck, identify which phase it's in.
 
 ### Online training (internal SglEngine)
 

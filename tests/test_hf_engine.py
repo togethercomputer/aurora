@@ -21,7 +21,7 @@ class MockArgs:
 def _import_hf_engine():
     """Import HFEngine, skipping test if dependencies unavailable."""
     try:
-        from torchspec.inference.engine.hf_engine import HFEngine
+        from aurora.inference.engine.hf_engine import HFEngine
 
         return HFEngine
     except ImportError as e:
@@ -31,7 +31,7 @@ def _import_hf_engine():
 def _get_engine_module():
     """Get the hf_engine module, skipping test if unavailable."""
     try:
-        import torchspec.inference.engine.hf_engine as engine_module
+        import aurora.inference.engine.hf_engine as engine_module
 
         return engine_module
     except ImportError as e:
@@ -168,10 +168,10 @@ class TestHFEngineSetup:
         mock_engine_class.from_pretrained.return_value = mock_inference_engine
 
         with patch(
-            "torchspec.inference.engine.hf_runner.HFRunner",
+            "aurora.inference.engine.hf_runner.HFRunner",
             mock_engine_class,
         ):
-            with patch("torchspec.config.mooncake_config.MooncakeConfig", MagicMock()):
+            with patch("aurora.config.mooncake_config.MooncakeConfig", MagicMock()):
                 engine.init(mooncake_config=None)
 
         assert engine._engine is mock_inference_engine
@@ -193,10 +193,10 @@ class TestHFEngineSetup:
         mooncake_dict = {"master_server_address": "localhost:50051"}
 
         with patch(
-            "torchspec.inference.engine.hf_runner.HFRunner",
+            "aurora.inference.engine.hf_runner.HFRunner",
             mock_engine_class,
         ):
-            with patch("torchspec.config.mooncake_config.MooncakeConfig", mock_mooncake_config):
+            with patch("aurora.config.mooncake_config.MooncakeConfig", mock_mooncake_config):
                 engine.init(mooncake_config=mooncake_dict)
 
         assert engine._engine is mock_inference_engine
@@ -214,12 +214,12 @@ class TestHFEngineSetup:
         mock_engine_class.from_pretrained.return_value = MagicMock()
 
         with patch(
-            "torchspec.inference.engine.hf_runner.HFRunner",
+            "aurora.inference.engine.hf_runner.HFRunner",
             mock_engine_class,
         ):
-            with patch("torchspec.config.mooncake_config.MooncakeConfig", MagicMock()):
+            with patch("aurora.config.mooncake_config.MooncakeConfig", MagicMock()):
                 with patch("torch.cuda.set_device") as mock_set_device:
-                    with patch("torchspec.ray.ray_actor._to_local_gpu_id", return_value=0):
+                    with patch("aurora.ray.ray_actor._to_local_gpu_id", return_value=0):
                         engine.init(mooncake_config=None)
 
         mock_set_device.assert_called_once_with(0)

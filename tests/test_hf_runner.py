@@ -4,9 +4,9 @@ from unittest.mock import patch
 
 import torch
 
-from torchspec.config.inference_config import HFInferenceConfig
-from torchspec.config.mooncake_config import MooncakeConfig
-from torchspec.inference.engine.hf_runner import HFRunner
+from aurora.config.inference_config import HFInferenceConfig
+from aurora.config.mooncake_config import MooncakeConfig
+from aurora.inference.engine.hf_runner import HFRunner
 
 
 class MockMooncakeStore:
@@ -54,7 +54,7 @@ class TestHFRunnerInitMooncakeStore:
         assert engine.mooncake_store is None
 
         with patch(
-            "torchspec.inference.engine.hf_runner.EagleMooncakeStore",
+            "aurora.inference.engine.hf_runner.EagleMooncakeStore",
             MockMooncakeStore,
         ):
             with patch("torch.cuda.current_device", return_value=0):
@@ -74,7 +74,7 @@ class TestHFRunnerInitMooncakeStore:
         )
 
         with patch(
-            "torchspec.inference.engine.hf_runner.EagleMooncakeStore",
+            "aurora.inference.engine.hf_runner.EagleMooncakeStore",
             MockMooncakeStore,
         ):
             with patch("torch.cuda.current_device", return_value=0):
@@ -108,7 +108,7 @@ class TestHFRunnerInitMooncakeStore:
 
         with patch.object(engine, "_setup_target_model"):
             with patch(
-                "torchspec.inference.engine.hf_runner.EagleMooncakeStore",
+                "aurora.inference.engine.hf_runner.EagleMooncakeStore",
                 MockMooncakeStore,
             ):
                 with patch("torch.cuda.current_device", return_value=0):

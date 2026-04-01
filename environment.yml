@@ -1,4 +1,4 @@
-name: torchspec
+name: aurora
 channels:
   - conda-forge
 dependencies:

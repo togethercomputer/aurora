@@ -56,7 +56,7 @@ from safetensors.torch import save_file
 from tqdm import tqdm
 from typing_extensions import override
 
-from torchspec.models.draft import AutoDraftModelConfig, AutoEagle3DraftModel
+from aurora.models.draft import AutoDraftModelConfig, AutoEagle3DraftModel
 
 logging.basicConfig(
     level=logging.INFO,
@@ -124,7 +124,7 @@ def _detect_model_dir(input_dir: str) -> str:
 def _generate_config_from_target(
     target_model_path: str, output_path: str, trust_remote_code: bool = False
 ) -> str:
-    from torchspec.config.utils import generate_draft_model_config
+    from aurora.config.utils import generate_draft_model_config
 
     logger.info("Auto-generating draft model config from %s", target_model_path)
     config_dict = generate_draft_model_config(
@@ -263,7 +263,7 @@ def _count_token_frequencies(prompts: list[dict]) -> Counter:
     import numba
     import numpy as np
 
-    from torchspec.data.utils import unpack_loss_mask
+    from aurora.data.utils import unpack_loss_mask
 
     @numba.njit(cache=True)
     def _histogram(ids, mask, counts):
@@ -304,7 +304,7 @@ def _load_tokenized_prompts(
     max_seq_length: int,
     cache_dir: Optional[str],
 ) -> list:
-    from torchspec.data.dataset import load_conversation_dataset
+    from aurora.data.dataset import load_conversation_dataset
 
     args_ns = argparse.Namespace(
         train_data_path=dataset_path,
@@ -408,7 +408,7 @@ def _convert_fsdp_to_hf(
     # ── Vocab pruning ────────────────────────────────────────────────────
     assert dataset_path is not None and draft_vocab_size is not None
     assert tokenizer is not None and chat_template is not None
-    from torchspec.data.preprocessing import process_token_dict_to_mappings
+    from aurora.data.preprocessing import process_token_dict_to_mappings
 
     logger.info(
         "Vocab pruning: vocab_size=%d, draft_vocab_size=%d",
@@ -552,7 +552,7 @@ def _validate_args(args: argparse.Namespace) -> None:
         raise ValueError("--draft-vocab-size is required when --prune-vocab is set")
 
     if args.chat_template:
-        from torchspec.data.template import TEMPLATE_REGISTRY
+        from aurora.data.template import TEMPLATE_REGISTRY
 
         available = TEMPLATE_REGISTRY.get_all_template_names()
         if args.chat_template not in available:

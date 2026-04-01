@@ -42,7 +42,7 @@ import time
 
 import torch
 
-from torchspec.models.draft.llama3_eagle import (
+from aurora.models.draft.llama3_eagle import (
     _build_eagle3_mask_pair,
     _EagleMaskedFlashAttnFunc,
     _snap_q_len,
@@ -58,7 +58,7 @@ ALL_MODES = ["closure", "simple", "dynamic", "seqlen", "seqlen_po2"]
 
 def _clear_compile_caches():
     """Clear all flash_attn compile caches + mask_mod caches."""
-    from torchspec.models.draft import llama3_eagle as mod
+    from aurora.models.draft import llama3_eagle as mod
 
     # mask_mod caches
     mod._flash_mask_mod_cache.clear()
