@@ -1,6 +1,6 @@
 # Aurora
 
-Aurora is a unified training-serving system for online speculative decoding. It closes the loop between speculator training and serving by continuously learning a draft model directly from live inference traces — treating online speculator learning as an asynchronous reinforcement-learning problem. Aurora is built on top of [TorchSpec](https://github.com/xwuShirley/aurora).
+Aurora is a unified training-serving system for online speculative decoding. It closes the loop between speculator training and serving by continuously learning a draft model directly from live inference traces — treating online speculator learning as an asynchronous reinforcement-learning problem. Aurora is built on top of [TorchSpec](https://github.com/torchspec-project/TorchSpec).
 
 Aurora supports **day-0 deployment**: a speculator can be served immediately and rapidly adapted to live traffic, improving system performance while providing immediate utility feedback. Across experiments, Aurora achieves a **1.5x day-0 speedup** on recently released frontier models (e.g., MiniMax-M2.1 and Qwen3-Coder-Next), and adapts effectively to distribution shifts in user traffic, delivering an additional **1.25x speedup** over a well-trained but static speculator on widely used models (e.g., Qwen3).
 
